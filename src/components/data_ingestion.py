@@ -5,7 +5,9 @@ from src.logger import logging
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
-from src.components.data_transformation import DataTransformation,DataTransformationConfig
+from src.components.data_transformation import DataTransformation, DataTransformationConfig
+from src.components.model_trainer import ModelTrainer, ModelTrainerConfig
+
 
 @dataclass
 class DataIngestionConfig:
@@ -20,7 +22,7 @@ class DataIngestion:
     def initiate_data_ingestion(self):
         logging.info("Entered the Data Ingestion method")
         try:
-            df = pd.read_csv(r'notebook\StudentsPerformance.csv')  
+            df = pd.read_csv(os.path.join('notebook', 'StudentsPerformance.csv'))  # ✅ Fixed path
             logging.info('Read the dataset as DataFrame')
 
             os.makedirs(os.path.dirname(self.ingestion_config.raw_data_path), exist_ok=True)
@@ -44,9 +46,21 @@ class DataIngestion:
             logging.error('Error occurred during data ingestion')
             raise CustomError(e, sys)
 
+
 if __name__ == '__main__':
-    data_ingestion = DataIngestion()
-    train_data,test_data=data_ingestion.initiate_data_ingestion()
-    
-    data_transformation=DataTransformation()
-    data_transformation.initiate_data_transformation(train_data,test_data)
+    try:
+        # Data Ingestion
+        data_ingestion = DataIngestion()
+        train_data, test_data = data_ingestion.initiate_data_ingestion()
+
+        # Data Transformation
+        data_transformation = DataTransformation()
+        train_array, test_array, _ = data_transformation.initiate_data_transformation(train_data, test_data)  # ✅ Fixed unpacking
+
+        # Model Training
+        model_trainer = ModelTrainer()  # ✅ Fixed capitalization
+        print(model_trainer.initiate_model_trainer(train_array, test_array))
+
+    except Exception as e:
+        logging.error(f"Pipeline execution failed: {str(e)}")
+        sys.exit(1)
