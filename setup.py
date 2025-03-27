@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 from typing import List
 
 HYPEN_DOT_E='-e .'
-def get_requirements(file_path: str) -> list[str]:
+def get_requirements(file_path: str) -> List[str]:
     requirements=[]
     with open(file_path) as f:
         requirements=f.readlines()
