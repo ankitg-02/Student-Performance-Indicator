@@ -1,13 +1,13 @@
 import os
 import sys
-from src.exception import CustomError
-from src.logger import logging
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
-from src.components.data_transformation import DataTransformation, DataTransformationConfig
-from src.components.model_trainer import ModelTrainer, ModelTrainerConfig
-
+from src.exception import CustomError
+from src.logger import logging
+from src.components.data_transformation import DataTransformation
+from src.components.model_trainer import ModelTrainer
+from src.utils import save_object
 
 @dataclass
 class DataIngestionConfig:
@@ -20,47 +20,35 @@ class DataIngestion:
         self.ingestion_config = DataIngestionConfig()
         
     def initiate_data_ingestion(self):
-        logging.info("Entered the Data Ingestion method")
+        logging.info("Starting Data Ingestion...")
         try:
-            df = pd.read_csv(os.path.join('notebook', 'StudentsPerformance.csv'))  # ✅ Fixed path
-            logging.info('Read the dataset as DataFrame')
+            df = pd.read_csv(os.path.join('notebook', 'StudentsPerformance.csv'))  
+            logging.info('Dataset loaded successfully.')
 
             os.makedirs(os.path.dirname(self.ingestion_config.raw_data_path), exist_ok=True)
 
-            df.to_csv(self.ingestion_config.raw_data_path, index=False, header=True)
+            df.to_csv(self.ingestion_config.raw_data_path, index=False)
 
-            logging.info('Train-test split initiated')
-            
+            logging.info('Splitting data into train & test sets...')
             train_set, test_set = train_test_split(df, test_size=0.2, random_state=42)
+
+            train_set.to_csv(self.ingestion_config.train_data_path, index=False)
+            test_set.to_csv(self.ingestion_config.test_data_path, index=False)
             
-            train_set.to_csv(self.ingestion_config.train_data_path, index=False, header=True)
-            test_set.to_csv(self.ingestion_config.test_data_path, index=False, header=True)
+            logging.info('Data ingestion completed successfully.')
             
-            logging.info('Data ingestion completed successfully')
-            
-            return (
-                self.ingestion_config.train_data_path,
-                self.ingestion_config.test_data_path
-            )
+            return self.ingestion_config.train_data_path, self.ingestion_config.test_data_path
+
         except Exception as e:
-            logging.error('Error occurred during data ingestion')
+            logging.error('Error during data ingestion')
             raise CustomError(e, sys)
 
-
 if __name__ == '__main__':
-    try:
-        # Data Ingestion
-        data_ingestion = DataIngestion()
-        train_data, test_data = data_ingestion.initiate_data_ingestion()
+    data_ingestion = DataIngestion()
+    train_data, test_data = data_ingestion.initiate_data_ingestion()
 
-        # Data Transformation
-        data_transformation = DataTransformation()
-        train_array, test_array, _ = data_transformation.initiate_data_transformation(train_data, test_data)  # ✅ Fixed unpacking
+    data_transformation = DataTransformation()
+    train_array, test_array = data_transformation.initiate_data_transformation(train_data, test_data)
 
-        # Model Training
-        model_trainer = ModelTrainer()  # ✅ Fixed capitalization
-        print(model_trainer.initiate_model_trainer(train_array, test_array))
-
-    except Exception as e:
-        logging.error(f"Pipeline execution failed: {str(e)}")
-        sys.exit(1)
+    model_trainer = ModelTrainer()
+    model_trainer.initiate_model_trainer(train_array, test_array)
