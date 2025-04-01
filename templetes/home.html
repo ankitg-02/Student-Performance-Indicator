@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Performance Predictor</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+
+      .container {
+        max-width: 600px;
+        margin-top: 50px;
+        padding: 20px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>Student Performance Predictor</h2>
+      <form action="/predict" method="post">
+        <div class="mb-3">
+          <label class="form-label">Gender:</label>
+          <select name="gender" class="form-select" required>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Race/Ethnicity:</label>
+          <select name="race_ethnicity" class="form-select" required>
+            <option value="group A">Group A</option>
+            <option value="group B">Group B</option>
+            <option value="group C">Group C</option>
+            <option value="group D">Group D</option>
+            <option value="group E">Group E</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Parental Level of Education:</label>
+          <select name="parent_education" class="form-select" required>
+            <option value="some high school">Some High School</option>
+            <option value="high school">High School</option>
+            <option value="some college">Some College</option>
+            <option value="associate's degree">Associate's Degree</option>
+            <option value="bachelor's degree">Bachelor's Degree</option>
+            <option value="master's degree">Master's Degree</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Lunch Type:</label>
+          <select name="lunch" class="form-select" required>
+            <option value="standard">Standard</option>
+            <option value="free/reduced">Free/Reduced</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Test Preparation Course:</label>
+          <select name="test_prep" class="form-select" required>
+            <option value="none">None</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Reading Score:</label>
+          <input
+            type="number"
+            name="reading_score"
+            class="form-control"
+            min="0"
+            max="100"
+            required
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Writing Score:</label>
+          <input
+            type="number"
+            name="writing_score"
+            class="form-control"
+            min="0"
+            max="100"
+            required
+          />
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">
+          Predict Math Score
+        </button>
+      </form>
+
+      {% if prediction is not none %}
+      <div class="alert alert-info mt-3">
+        <h4>Predicted Math Score: {{ prediction }}</h4>
+      </div>
+      {% endif %}
+    </div>
+  </body>
+</html>
